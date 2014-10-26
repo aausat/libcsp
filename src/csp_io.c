@@ -290,10 +290,9 @@ int csp_send_direct(csp_id_t idout, csp_packet_t * packet, uint32_t timeout) {
 
 	if (mtu > 0 && bytes > mtu)
 		goto tx_err;
-	printf("CALLING TX FUNC\n");
+
 	if ((*ifout->interface->nexthop)(ifout->interface, packet, timeout) != CSP_ERR_NONE)
 		goto tx_err;
-	printf("DONE CALLING TX FUNC\n");
 
 	ifout->interface->tx++;
 	ifout->interface->txbytes += bytes;
