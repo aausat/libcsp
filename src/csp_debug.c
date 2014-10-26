@@ -39,10 +39,10 @@ csp_debug_hook_func_t csp_debug_hook_func = NULL;
 unsigned char csp_debug_level_enabled[] = {
 	[CSP_ERROR]		= true,
 	[CSP_WARN]		= true,
-	[CSP_INFO]		= false,
-	[CSP_BUFFER]	= false,
-	[CSP_PACKET]	= false,
-	[CSP_PROTOCOL]	= false,
+	[CSP_INFO]		= true,
+	[CSP_BUFFER]	= true,
+	[CSP_PACKET]	= true,
+	[CSP_PROTOCOL]	= true,
 	[CSP_LOCK]		= false,
 };
 
