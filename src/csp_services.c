@@ -140,22 +140,26 @@ void csp_ps(uint8_t node, uint32_t timeout) {
 	packet->data[0] = 0x55;
 	packet->length = 1;
 
-	printf("PS node %"PRIu8": ", node);
+	printf("PS node %"PRIu8": \r\n", node);
 
 	/* Try to send frame */
 	if (!csp_send(conn, packet, 0))
 		goto out;
 
-	/* Read incoming frame */
-	packet = csp_read(conn, timeout);
-	if (packet == NULL) {
-		printf(" Timeout!\r\n");
-		goto out;
+	while(1) {
+
+		/* Read incoming frame */
+		packet = csp_read(conn, timeout);
+		if (packet == NULL)
+			break;
+
+		/* We have a reply, add our own NULL char */
+		packet->data[packet->length] = 0;
+		printf("%s", packet->data);
+
 	}
 
-	/* We have a reply */
-	printf("PS Length %"PRIu16"\r\n", packet->length);
-	printf("%s\r\n", packet->data);
+	printf("\r\n");
 
 	/* Clean up */
 out:

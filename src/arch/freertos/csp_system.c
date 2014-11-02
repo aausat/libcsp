@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <stdio.h>
 #include <stdint.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
 #include <csp/csp.h>
 #include <csp/csp_error.h>
@@ -29,8 +29,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <csp/arch/csp_system.h>
 
 int csp_sys_tasklist(char * out) {
+#if FREERTOS_VERSION < 8
 	vTaskList((signed portCHAR *) out);
+#else
+	vTaskList(out);
+#endif
 	return CSP_ERR_NONE;
+}
+
+int csp_sys_tasklist_size(void) {
+	return 40 * uxTaskGetNumberOfTasks();
 }
 
 uint32_t csp_sys_memfree(void) {

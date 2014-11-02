@@ -1,7 +1,7 @@
 /*
 Cubesat Space Protocol - A small network-layer protocol designed for Cubesats
 Copyright (C) 2012 Gomspace ApS (http://www.gomspace.com)
-Copyright (C) 2012 AAUSAT3 Project (http://aausat3.space.aau.dk) 
+Copyright (C) 2012 AAUSAT3 Project (http://aausat3.space.aau.dk)
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,21 +18,14 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <FreeRTOS.h>
-#include <task.h>
+#include <csp/arch/csp_clock.h>
 
-/* CSP includes */
-#include <csp/csp.h>
+#include <time.h>
 
-#include <csp/arch/csp_thread.h>
+void clock_get_time(csp_timestamp_t * timestamp) {
+	timestamp->tv_sec = time(0);
+}
 
-int csp_thread_create(csp_thread_return_t (* routine)(void *), const signed char * const thread_name, unsigned short stack_depth, void * parameters, unsigned int priority, csp_thread_handle_t * handle) {
-#if (FREERTOS_VERSION >= 8)
-	portBASE_TYPE ret = xTaskCreate(routine, (char *) thread_name, stack_depth, parameters, priority, handle);
-#else
-	portBASE_TYPE ret = xTaskCreate(routine, thread_name, stack_depth, parameters, priority, handle);
-#endif
-	if (ret != pdTRUE)
-		return CSP_ERR_NOMEM;
-	return CSP_ERR_NONE;
+void clock_set_time(csp_timestamp_t * timestamp) {
+	return;
 }

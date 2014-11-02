@@ -150,7 +150,7 @@ typedef union {
 #define CSP_FRES1			0x80 				// Reserved for future use
 #define CSP_FRES2			0x40 				// Reserved for future use
 #define CSP_FRES3			0x20 				// Reserved for future use
-#define CSP_FRES4			0x10 				// Reserved for future use
+#define CSP_FFRAG			0x10 				// Use fragmentation
 #define CSP_FHMAC 			0x08 				// Use HMAC verification
 #define CSP_FXTEA 			0x04 				// Use XTEA encryption
 #define CSP_FRDP			0x02 				// Use RDP protocol
@@ -198,13 +198,10 @@ typedef struct __attribute__((__packed__)) {
 
 /** Interface TX function */
 typedef struct csp_iface_s csp_iface_t;
-
-/* Nexthop typedef:
- * Note this has to match the nexthop type in the iface structure */
 typedef int (*nexthop_t)(struct csp_iface_s * interface, csp_packet_t *packet, uint32_t timeout);
 
 /** Interface struct */
-struct csp_iface_s {
+typedef struct csp_iface_s {
 	const char *name;			/**< Interface name (keep below 10 bytes) */
 	void * driver;				/**< Pointer to interface handler structure */
 	nexthop_t nexthop;			/**< Next hop function */
@@ -222,7 +219,11 @@ struct csp_iface_s {
 	uint32_t rxbytes;			/**< Received bytes */
 	uint32_t irq;				/**< Interrupts */
 	struct csp_iface_s *next;	/**< Next interface */
-};
+} csp_iface_t;
+
+/* Nexthop typedef:
+ * Note this has to match the nexthop type in the iface structure */
+typedef int (*nexthop_t)(csp_iface_t * interface, csp_packet_t *packet, uint32_t timeout);
 
 /**
  * This define must be equal to the size of the packet overhead in csp_packet_t.

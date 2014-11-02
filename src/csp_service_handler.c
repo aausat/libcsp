@@ -29,9 +29,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <csp/csp_platform.h>
 
 #include <csp/arch/csp_time.h>
+#include <csp/arch/csp_clock.h>
 #include <csp/arch/csp_malloc.h>
 #include <csp/arch/csp_system.h>
 #include "csp_route.h"
+
+#define CSP_RPS_MTU	196
 
 static int do_cmp_ident(struct csp_cmp_message *cmp) {
 
@@ -118,6 +121,22 @@ static int do_cmp_poke(struct csp_cmp_message *cmp) {
 
 }
 
+static int do_cmp_clock(struct csp_cmp_message *cmp) {
+
+	cmp->clock.tv_sec = csp_ntoh32(cmp->clock.tv_sec);
+	cmp->clock.tv_nsec = csp_ntoh32(cmp->clock.tv_nsec);
+
+	if (cmp->clock.tv_sec != 0) {
+		clock_set_time(&cmp->clock);
+	}
+
+	clock_get_time(&cmp->clock);
+	cmp->clock.tv_sec = csp_hton32(cmp->clock.tv_sec);
+	cmp->clock.tv_nsec = csp_hton32(cmp->clock.tv_nsec);
+	return CSP_ERR_NONE;
+
+}
+
 /* CSP Management Protocol handler */
 int csp_cmp_handler(csp_conn_t * conn, csp_packet_t * packet) {
 
@@ -152,6 +171,10 @@ int csp_cmp_handler(csp_conn_t * conn, csp_packet_t * packet) {
 			ret = do_cmp_poke(cmp);
 			break;
 
+		case CSP_CMP_CLOCK:
+			ret = do_cmp_clock(cmp);
+			break;
+
 		default:
 			ret = CSP_ERR_INVAL;
 			break;
@@ -180,10 +203,38 @@ void csp_service_handler(csp_conn_t * conn, csp_packet_t * packet) {
 		break;
 
 	case CSP_PS: {
-		csp_sys_tasklist((char *)packet->data);
-		packet->length = strlen((char *)packet->data);
-		packet->data[packet->length] = '\0';
-		packet->length++;
+
+		/* Start by allocating just the right amount of memory */
+		int task_list_size = csp_sys_tasklist_size();
+		char * pslist = csp_malloc(task_list_size);
+
+		/* Retrieve the tasklist */
+		csp_sys_tasklist(pslist);
+		int pslen = strnlen(pslist, task_list_size);
+
+		/* Split the potentially very long string into packets */
+		int i = 0;
+		while(i < pslen) {
+
+			/* Allocate packet buffer, if need be */
+			if (packet == NULL)
+				packet = csp_buffer_get(CSP_RPS_MTU);
+			if (packet == NULL)
+				break;
+
+			/* Calculate length, either full MTU or the remainder */
+			packet->length = (pslen - i > CSP_RPS_MTU) ? CSP_RPS_MTU : (pslen - i);
+
+			/* Send out the data */
+			memcpy(packet->data, &pslist[i], packet->length);
+			i += packet->length;
+			if (!csp_send(conn, packet, 0))
+				csp_buffer_free(packet);
+
+			/* Clear the packet reference when sent */
+			packet = NULL;
+
+		}
 		break;
 	}
 
@@ -237,7 +288,9 @@ void csp_service_handler(csp_conn_t * conn, csp_packet_t * packet) {
 		return;
 	}
 
-	if (!csp_send(conn, packet, 0))
-		csp_buffer_free(packet);
+	if (packet != NULL) {
+		if (!csp_send(conn, packet, 0))
+			csp_buffer_free(packet);
+	}
 
 }
