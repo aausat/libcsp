@@ -197,7 +197,7 @@ typedef struct __attribute__((__packed__)) {
 } csp_packet_t;
 
 /** Interface TX function */
-typedef struct csp_iface_s csp_iface_t;
+struct csp_iface_s;
 typedef int (*nexthop_t)(struct csp_iface_s * interface, csp_packet_t *packet, uint32_t timeout);
 
 /** Interface struct */
@@ -220,10 +220,6 @@ typedef struct csp_iface_s {
 	uint32_t irq;				/**< Interrupts */
 	struct csp_iface_s *next;	/**< Next interface */
 } csp_iface_t;
-
-/* Nexthop typedef:
- * Note this has to match the nexthop type in the iface structure */
-typedef int (*nexthop_t)(csp_iface_t * interface, csp_packet_t *packet, uint32_t timeout);
 
 /**
  * This define must be equal to the size of the packet overhead in csp_packet_t.
@@ -525,6 +521,29 @@ void csp_promisc_disable(void);
  * @param timeout Timeout in ms to wait for a new packet
  */
 csp_packet_t *csp_promisc_read(uint32_t timeout);
+
+/**
+ * Send multiple packets using the simple fragmentation protocol
+ * CSP will add total size and offset to all packets
+ * This can be read by the client using the csp_sfp_recv, if the CSP_FFRAG flag is set
+ * @param conn pointer to connection
+ * @param data pointer to data to send
+ * @param totalsize size of data to send
+ * @param mtu maximum transfer unit
+ * @param timeout timeout in ms to wait for csp_send()
+ * @return 0 if OK, -1 if ERR
+ */
+int csp_sfp_send(csp_conn_t * conn, void * data, int totalsize, int mtu, uint32_t timeout);
+
+/**
+ * This is the counterpart to the csp_sfp_send function
+ * @param conn pointer to active conn, on which you expect to receive sfp packed data
+ * @param dataout pointer to NULL pointer, whill be overwritten with malloc pointer
+ * @param datasize actual size of received data
+ * @param timeout timeout in ms to wait for csp_recv()
+ * @return 0 if OK, -1 if ERR
+ */
+int csp_sfp_recv(csp_conn_t * conn, void ** dataout, int * datasize, uint32_t timeout);
 
 /**
  * If the given packet is a service-request (that is uses one of the csp service ports)
