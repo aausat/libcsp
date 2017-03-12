@@ -30,7 +30,7 @@ int csp_thread_create(csp_thread_return_t (* routine)(void *), const char * cons
 #if (FREERTOS_VERSION >= 8)
 	portBASE_TYPE ret = xTaskCreate(routine, thread_name, stack_depth, parameters, priority, handle);
 #else
-	portBASE_TYPE ret = xTaskCreate(routine, (signed char *) thread_name, stack_depth, parameters, priority, handle);
+	portBASE_TYPE ret = xTaskCreate(routine, thread_name, stack_depth, parameters, priority, handle);
 #endif
 	if (ret != pdTRUE)
 		return CSP_ERR_NOMEM;
