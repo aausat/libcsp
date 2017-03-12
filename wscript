@@ -57,7 +57,8 @@ def options(ctx):
     gr.add_option('--enable-if-zmqhub', action='store_true', help='Enable ZMQHUB interface')
     
     # Drivers
-    gr.add_option('--enable-can-socketcan', default=None, metavar='CHIP', help='Enable Linux socketcan driver')
+    #gr.add_option('--enable-can-socketcan', default=None, metavar='CHIP', help='Enable Linux socketcan driver')
+    gr.add_option('--with-driver-can', default=None, metavar='CHIP', help='Build CAN driver. [socketcan, at90can128]')
     gr.add_option('--with-driver-usart', default=None, metavar='DRIVER', help='Build USART driver. [windows, linux, None]')
 
     # OS    
@@ -80,6 +81,10 @@ def configure(ctx):
     # Validate OS
     if not ctx.options.with_os in ('posix', 'windows', 'freertos', 'macosx'):
         ctx.fatal('--with-os must be either \'posix\', \'windows\', \'macosx\' or \'freertos\'')
+
+    # Validate CAN drivers
+    if not ctx.options.with_driver_can in (None, 'socketcan', 'at90can128'):
+        ctx.fatal('--with-driver-can must be either \'socketcan\' or \'at90can128\'')
 
     # Validate USART drivers
     if not ctx.options.with_driver_usart in (None, 'windows', 'linux'):
@@ -139,8 +144,10 @@ def configure(ctx):
     ctx.define_cond('CSP_MACOSX', ctx.options.with_os == 'macosx')
         
     # Add CAN driver
-    if ctx.options.enable_can_socketcan:
-        ctx.env.append_unique('FILES_CSP', 'src/drivers/can/can_socketcan.c')
+    #if ctx.options.enable_can_socketcan:
+    #    ctx.env.append_unique('FILES_CSP', 'src/drivers/can/can_socketcan.c')
+    if ctx.options.with_driver_can != None:
+        ctx.env.append_unique('FILES_CSP', 'src/drivers/can/can_{0}.c'.format(ctx.options.with_driver_can))
 
     # Add USART driver
     if ctx.options.with_driver_usart != None:
@@ -224,7 +231,7 @@ def configure(ctx):
     ctx.check_cc(header_name='stdbool.h', mandatory=False, define_name='CSP_HAVE_STDBOOL_H', type='cstlib')
 
     # Check for libsocketcan.h
-    if ctx.options.enable_if_can and ctx.options.enable_can_socketcan:
+    if ctx.options.enable_if_can and ctx.options.with_driver_can == 'socketcan':
         have_socketcan = ctx.check_cc(lib='socketcan', mandatory=False, define_name='CSP_HAVE_LIBSOCKETCAN')
         if have_socketcan:
             ctx.env.append_unique('LIBS', ['socketcan'])
