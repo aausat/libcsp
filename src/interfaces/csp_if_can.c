@@ -96,6 +96,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /* Buffer element timeout in ms */
 #define PBUF_TIMEOUT_MS		10000
 
+/* Stack size of the CSP CAN task */
+#define CSP_CAN_TASK_STACKSIZE 1000/sizeof(int)
+
 /* CFP Frame Types */
 enum cfp_frame_t {
 	CFP_BEGIN = 0,
@@ -519,14 +522,14 @@ int csp_can_init(uint8_t mode, struct csp_can_config *conf)
 		return CSP_ERR_NOMEM;
 	}
 
-	ret = csp_thread_create(csp_can_rx_task, "CAN", 6000/sizeof(int), NULL, 3, &csp_can_rx_task_h);
+	ret = csp_thread_create(csp_can_rx_task, "CAN", CSP_CAN_TASK_STACKSIZE, NULL, 3, &csp_can_rx_task_h);
 	if (ret != 0) {
 		csp_log_error("Failed to init CAN RX task");
 		return CSP_ERR_NOMEM;
 	}
 
 	/* Initialize CAN driver */
-	if (can_init(CFP_MAKE_DST(csp_get_address()), mask, conf) != 0) {
+	if (csp_can_driver_init(CFP_MAKE_DST(csp_get_address()), mask, conf) != 0) {
 		csp_log_error("Failed to initialize CAN driver");
 		return CSP_ERR_DRIVER;
 	}
