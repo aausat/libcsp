@@ -42,6 +42,9 @@ if __name__ == "__main__":
     if options.routing_table:
         libcsp.rtable_load(options.routing_table)
 
+    print("Options:")
+    print(options)
+
     libcsp.route_start_task()
     time.sleep(0.2)  # allow router task startup
 
