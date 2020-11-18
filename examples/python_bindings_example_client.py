@@ -59,13 +59,31 @@ if __name__ == "__main__":
     print("Routes:")
     libcsp.print_routes()
 
-    #print("CMP ident:", libcsp.cmp_ident(options.server_address))
+    print("CMP ident:", libcsp.cmp_ident(options.server_address))
 
+    print("Ping: %d mS" % libcsp.ping(options.server_address))
+    print("Ping: %d mS" % libcsp.ping(options.server_address))
+    print("Ping: %d mS" % libcsp.ping(options.server_address))
+    libcsp.reboot(options.server_address)
     print("Ping: %d mS" % libcsp.ping(options.server_address))
 
     # transaction
+    #outbuf = bytearray().fromhex('01')
+    #inbuf = bytearray(1)
+    #print ("Exchange data with server using csp_transaction ...")
+    #libcsp.transaction(0, options.server_address, 10, 1000, outbuf, inbuf)
+    #print ("  got reply from server [%s]" % (''.join('{:02x}'.format(x) for x in inbuf)))
+
+    '''
+    s = "ABCD"
     outbuf = bytearray().fromhex('01')
-    inbuf = bytearray(1)
-    print ("Exchange data with server using csp_transaction ...")
-    libcsp.transaction(0, options.server_address, 10, 1000, outbuf, inbuf)
-    print ("  got reply from server [%s]" % (''.join('{:02x}'.format(x) for x in inbuf)))
+    outbuf.extend(map(ord, s))
+    a = b'fisk'
+
+    # This csp_send segfaults in strcmp of get_capsule_pointer
+    data = bytearray()
+    mybuf = libcsp.buffer_get(100)
+    print(type(mybuf))
+    libcsp.packet_set_data(mybuf,outbuf)
+    libcsp.send(0, mybuf)
+    '''
