@@ -54,6 +54,7 @@ def options(ctx):
     gr.add_option('--enable-dedup', action='store_true', help='Enable packet deduplicator')
     gr.add_option('--enable-external-debug', action='store_true', help='Enable external debug API')
     gr.add_option('--enable-debug-timestamp', action='store_true', help='Enable timestamps on debug/log')
+    gr.add_option('--m4', action='store_true', help="Enable hardware float for m4")
 
     # Drivers and interfaces (requires external dependencies)
     gr.add_option('--enable-if-zmqhub', action='store_true', help='Enable ZMQ interface')
@@ -102,6 +103,9 @@ def configure(ctx):
     if (len(ctx.stack_path) <= 1) and (len(ctx.env.CFLAGS) == 0):
         ctx.env.prepend_value('CFLAGS', ["-std=gnu99", "-g", "-Os", "-Wall", "-Wextra", "-Wshadow", "-Wcast-align",
                                          "-Wwrite-strings", "-Wno-unused-parameter", "-Werror"])
+
+    if ctx.options.m4:
+        ctx.env.prepend_value('CFLAGS', ['-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-mthumb', '-mcpu=cortex-m4' ])
 
     # Setup default include path and any extra defined
     ctx.env.append_unique('INCLUDES_CSP', ['include'] + ctx.options.includes.split(','))
