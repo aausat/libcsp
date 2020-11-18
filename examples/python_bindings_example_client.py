@@ -54,7 +54,7 @@ if __name__ == "__main__":
     print("Routes:")
     libcsp.print_routes()
 
-    print("CMP ident:", libcsp.cmp_ident(options.server_address))
+    #print("CMP ident:", libcsp.cmp_ident(options.server_address))
 
     print("Ping: %d mS" % libcsp.ping(options.server_address))
 
