@@ -23,6 +23,7 @@ def getOptions():
     parser.add_argument("-a", "--address", type=int, default=10, help="Local CSP address")
     parser.add_argument("-c", "--can", help="Add CAN interface")
     parser.add_argument("-z", "--zmq", help="Add ZMQ interface")
+    parser.add_argument("-k", "--kiss", help="Add KISS interface")
     parser.add_argument("-s", "--server-address", type=int, default=27, help="Server address")
     parser.add_argument("-R", "--routing-table", help="Routing table")
     return parser.parse_args(sys.argv[1:])
@@ -31,9 +32,11 @@ def getOptions():
 if __name__ == "__main__":
 
     options = getOptions()
-
     libcsp.init(options.address, "host", "model", "1.2.3", 10, 300)
 
+    if options.kiss:
+        libcsp.kiss_init(options.kiss)
+        #libcsp.kiss_init(options.kiss, 500000, 512, "KISS")
     if options.can:
         libcsp.can_socketcan_init(options.can)
     if options.zmq:
