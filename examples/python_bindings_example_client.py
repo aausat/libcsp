@@ -35,8 +35,10 @@ if __name__ == "__main__":
     libcsp.init(options.address, "host", "model", "1.2.3", 10, 300)
 
     if options.kiss:
-        libcsp.kiss_init(options.kiss)
-        #libcsp.kiss_init(options.kiss, 500000, 512, "KISS")
+        print("Nick er sej")
+        #libcsp.kiss_init(options.kiss)
+        libcsp.kiss_init(options.kiss, 115200, 512, "KISS")
+        libcsp.rtable_load("0/0 KISS")
     if options.can:
         libcsp.can_socketcan_init(options.can)
     if options.zmq:
