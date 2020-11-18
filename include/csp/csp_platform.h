@@ -47,7 +47,7 @@ extern "C" {
 	/** Exit/release critical lock. */
 	#define CSP_EXIT_CRITICAL(lock) do { csp_bin_sem_post(&lock); } while(0)
 #elif (CSP_FREERTOS)
-	#include "FreeRTOS.h"
+	#include "freertos/FreeRTOS.h"
 	#define CSP_BASE_TYPE portBASE_TYPE
 	#define CSP_MAX_TIMEOUT portMAX_DELAY
 	#define CSP_DEFINE_CRITICAL(lock)
