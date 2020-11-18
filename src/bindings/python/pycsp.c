@@ -948,6 +948,8 @@ static PyMethodDef methods[] = {
 
     /* csp/interfaces/csp_if_zmqhub.h */
     {"zmqhub_init",         pycsp_zmqhub_init,         METH_VARARGS, ""},
+
+    /* csp/interfaces/csp_if_zmqhub.h */
     {"kiss_init",           pycsp_kiss_init,           METH_VARARGS, ""},
 
     /* csp/drivers/can_socketcan.h */
