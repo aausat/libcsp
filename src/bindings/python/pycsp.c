@@ -31,14 +31,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define SOCKET_CAPSULE      "csp_socket_t"
 #define CONNECTION_CAPSULE  "csp_conn_t"
 #define PACKET_CAPSULE      "csp_packet_t"
-
+#include <stdio.h>
 static PyObject *Error = NULL;
 
 static int CSP_POINTER_HAS_BEEN_FREED = 0; // used to indicate pointer has been freed, because a NULL pointer can't be set.
 
 static void * get_capsule_pointer(PyObject* capsule, const char* expected_type, bool allow_null) {
     const char* capsule_name = PyCapsule_GetName(capsule);
-    if (strcmp(capsule_name, expected_type) != 0) {
+    printf("NICK DEBUG get_capsule_pointer\n");
+    printf("NICK DEBUG get_capsule_pointer capsule_name pointer 0x%p\n", capsule_name);
+    if (PyCapsule_IsValid(capsule, "csp_packet_t")) {
+        printf("NICK DEBUG valid capsule\n");
+        printf("NICK DEBUG capsule name : %s\n", capsule_name);
+    }
+    int ret = 0;
+    if (capsule_name[0] != '\n' ) {
+      ret = strcmp(capsule_name, expected_type) ;
+    }
+    if (ret != 0) {
         PyErr_Format(PyExc_TypeError,
                      "capsule contains unexpected type, expected=%s, got=%s",
                      expected_type, capsule_name); // TypeError is thrown

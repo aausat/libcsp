@@ -74,16 +74,20 @@ if __name__ == "__main__":
     #libcsp.transaction(0, options.server_address, 10, 1000, outbuf, inbuf)
     #print ("  got reply from server [%s]" % (''.join('{:02x}'.format(x) for x in inbuf)))
 
-    '''
     s = "ABCD"
     outbuf = bytearray().fromhex('01')
     outbuf.extend(map(ord, s))
     a = b'fisk'
+    conn_cap = libcsp.connect(libcsp.CSP_PRIO_NORM, options.server_address,
+            options.address, 1000,  libcsp.CSP_O_NONE)
 
     # This csp_send segfaults in strcmp of get_capsule_pointer
     data = bytearray()
     mybuf = libcsp.buffer_get(100)
     print(type(mybuf))
     libcsp.packet_set_data(mybuf,outbuf)
-    libcsp.send(0, mybuf)
-    '''
+    #TODO create connection before send...
+    #libcsp.connect(options.server_address:
+
+
+    libcsp.send(conn_cap, mybuf)
