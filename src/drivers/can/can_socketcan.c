@@ -86,7 +86,7 @@ static void * socketcan_rx_thread(void * arg)
 		/* Strip flags */
 		frame.can_id &= CAN_EFF_MASK;
 
-		/* Call RX callbacsp_can_rx_frameck */
+		/* Call RX callback */
 		csp_can_rx(&ctx->iface, frame.can_id, frame.data, frame.can_dlc, NULL);
 	}
 
