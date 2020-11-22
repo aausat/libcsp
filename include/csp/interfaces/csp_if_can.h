@@ -1,7 +1,7 @@
 /*
 Cubesat Space Protocol - A small network-layer protocol designed for Cubesats
 Copyright (C) 2012 GomSpace ApS (http://www.gomspace.com)
-Copyright (C) 2012 AAUSAT3 Project (http://aausat3.space.aau.dk) 
+Copyright (C) 2012 AAUSAT3 Project (http://aausat3.space.aau.dk)
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
    CAN interface.
 
-   CAN frames contains at most 8 bytes of data, so in order to transmit CSP 
+   CAN frames contains at most 8 bytes of data, so in order to transmit CSP
    packets larger than this, a fragmentation protocol is required.
    The CAN Fragmentation Protocol (CFP) is based on CAN2.0B, using all 29 bits of the
    identifier. The CAN identifier is divided into these fields:
@@ -120,7 +120,7 @@ extern "C" {
 
    @param[in] driver_data driver data from #csp_iface_t
    @param[in] id CAM message id.
-   @param[in] data CAN data 
+   @param[in] data CAN data
    @param[in] dlc data length of \a data.
    @return #CSP_ERR_NONE on success, otherwise an error code.
 */
