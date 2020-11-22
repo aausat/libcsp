@@ -149,7 +149,7 @@ int csp_can_add_interface(csp_iface_t * iface);
 /**
    Send CSP packet over CAN (nexthop).
 
-   This function will split the CSP packet into several fragments and call csp_can_tx_fram() for sending each fragment.
+   This function will split the CSP packet into several fragments and call csp_can_tx_frame() for sending each fragment.
 
    @param[in] ifroute route.
    @param[in] packet CSP packet to send.
