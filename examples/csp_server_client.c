@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* Server port, the port the server listens on for incoming connections from the client. */
 #define MY_SERVER_PORT		10
+#define MY_SERVER_FILE_PORT		11
 
 /* Commandline options */
 static uint8_t server_address = 255;
@@ -53,6 +54,18 @@ CSP_DEFINE_TASK(task_server) {
 	/* Create a backlog of 10 connections, i.e. up to 10 new connections can be queued */
 	csp_listen(sock, 10);
 
+    // creating file pointer to work with files
+    FILE *fptr;
+
+    // opening file in writing mode
+    fptr = fopen("out.txt", "wa");
+
+    // exiting program
+    if (fptr == NULL) {
+        printf("Error!");
+        exit(1);
+    }
+
 	/* Wait for connections and then process packets on the connection */
 	while (1) {
 
@@ -73,6 +86,13 @@ CSP_DEFINE_TASK(task_server) {
 				csp_buffer_free(packet);
 				++server_received;
 				break;
+			case MY_SERVER_FILE_PORT:
+				/* Process packet here */
+				csp_log_info("Packet received on MY_SERVER_FILE_PORT len=%d", packet->length);
+        fwrite(packet->data, sizeof(char), packet->length, fptr);
+				csp_buffer_free(packet);
+				++server_received;
+				break;
 
 			default:
 				/* Call the default CSP service handler, handle pings, buffer use, etc. */
@@ -83,6 +103,8 @@ CSP_DEFINE_TASK(task_server) {
 
 		/* Close current connection */
 		csp_close(conn);
+    fflush(fptr);
+    fclose(fptr);
 
 	}
 

@@ -74,20 +74,28 @@ if __name__ == "__main__":
     #libcsp.transaction(0, options.server_address, 10, 1000, outbuf, inbuf)
     #print ("  got reply from server [%s]" % (''.join('{:02x}'.format(x) for x in inbuf)))
 
-    s = "ABCD"
-    outbuf = bytearray().fromhex('01')
-    outbuf.extend(map(ord, s))
-    a = b'fisk'
+
+    #conn_cap = libcsp.connect(libcsp.CSP_PRIO_NORM, options.server_address,
+    #        options.address, 1000,  libcsp.CSP_O_NONE)
     conn_cap = libcsp.connect(libcsp.CSP_PRIO_NORM, options.server_address,
-            options.address, 1000,  libcsp.CSP_O_NONE)
+            options.address, 1000,  libcsp.CSP_O_RDP)
 
-    # This csp_send segfaults in strcmp of get_capsule_pointer
+
+
+
     data = bytearray()
-    mybuf = libcsp.buffer_get(100)
-    print(type(mybuf))
-    libcsp.packet_set_data(mybuf,outbuf)
-    #TODO create connection before send...
-    #libcsp.connect(options.server_address:
 
+    f = open("doc/structure.rst", "rb")
+    #print(f.read())
+    for x in f:
+        print(f'{x}')
+        print(f'{type(x)}')
+        data = bytearray(x)
+        print(f'Size of s {len(data)}')
+        mybuf = libcsp.buffer_get(100)
+        libcsp.packet_set_data(mybuf, data)
+        libcsp.send(conn_cap, mybuf)
+        time.sleep(0.5)
 
-    libcsp.send(conn_cap, mybuf)
+    print('Closeing conn')
+    libcsp.close(conn_cap)
